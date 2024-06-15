@@ -42,7 +42,7 @@ export default function ResetPassword() {
     }
     setErrorEmail(false)
     
-    await fetch('http://localhost:3000/api/resetPassword', {
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/resetPassword`, {
       method: 'POST',
       body: JSON.stringify({
         email: formData.get('email')?.toString().toLocaleLowerCase(),

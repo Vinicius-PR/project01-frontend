@@ -35,7 +35,7 @@ export default function ChangePasswordForm({userId}: ChangePasswordFormProps) {
     setErrorPassword(false)
 
     //Change password here
-    await fetch('http://localhost:3000/api/changePassword', {
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/changePassword`, {
       method: 'POST',
       body: JSON.stringify({
         newPassword: formData.get('password'),

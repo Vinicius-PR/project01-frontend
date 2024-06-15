@@ -46,7 +46,7 @@ export default function SignIn() {
 
   async function signInWithGoogle() {
     const singInData = await signIn('google', {
-      callbackUrl: 'http://localhost:3000/'
+      callbackUrl: `${process.env.NEXT_PUBLIC_APP_URL}`
     })
 
     if (singInData?.error) {
@@ -61,7 +61,7 @@ export default function SignIn() {
 
   async function signInWithGithub() {
     const singInData = await signIn('github', {
-      callbackUrl: 'http://localhost:3000/'
+      callbackUrl: `${process.env.NEXT_PUBLIC_APP_URL}`
     })
 
     console.log(singInData)
@@ -96,7 +96,7 @@ export default function SignIn() {
     if (singInData?.error === "CredentialsSignin") {
       setErrorSignIn({
         status: true,
-        message: 'Email/password is Invalid'
+        message: 'Email/password Invalid'
       })
     } else if (singInData?.error === "User is not active") {
       setErrorSignIn({

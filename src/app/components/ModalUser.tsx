@@ -92,7 +92,7 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
   }
 
   function createNewUser(formData:any) {
-    fetch('http://localhost:8080/user', {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user`, {
       method: 'POST',
       // I had to comment this cause was giving an erro about boundary
       // headers: {"Content-Type": "multipart/form-data", "boundary": "xxx---"},
@@ -105,7 +105,7 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
   }
 
   function editUser(formData:any, id: string) {
-    fetch(`http://localhost:8080/user/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user/${id}`, {
       method: 'PUT',
       body: formData
     }).then(() => {

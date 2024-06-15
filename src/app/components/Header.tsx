@@ -186,7 +186,7 @@ export default function Header() {
                     <MenuItem key={'dashboard'} onClick={() => {
                       signOut()
                       handleCloseNavMenu()
-                      // router.push('http://localhost:3000/user/details')
+                      // router.push(`${process.env.NEXT_PUBLIC_APP_URL}/user/details`)
                     }}>
                       <Typography textAlign="center">Dashboard</Typography>
                     </MenuItem>
@@ -196,14 +196,14 @@ export default function Header() {
                       <MenuItem key={'login'} onClick={() => {
                         handleCloseNavMenu()
                         handleCloseUserMenu()
-                        router.push('http://localhost:3000/sign-in')
+                        router.push(`${process.env.NEXT_PUBLIC_APP_URL}/sign-in`)
                         }}>
                           <Typography textAlign="center">LogIn</Typography>
                       </MenuItem>,
                       <MenuItem key={'create-account'} onClick={() => {
                         handleCloseNavMenu()
                         handleCloseUserMenu()
-                        router.push('http://localhost:3000/sign-up')
+                        router.push(`${process.env.NEXT_PUBLIC_APP_URL}/sign-up`)
                         }}>
                           <Typography textAlign="center">Create Account</Typography>
                       </MenuItem>

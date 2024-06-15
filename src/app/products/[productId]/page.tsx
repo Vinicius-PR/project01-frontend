@@ -31,7 +31,7 @@ export default function Product({params} : {
   }
 
   function getProduct() {
-    fetch(`http://localhost:8080/product/${params.productId}`)
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/product/${params.productId}`)
     .then(response => {
       return response.json()
     })
@@ -48,7 +48,7 @@ export default function Product({params} : {
 
   function deleteProduct(id: string | undefined) {
     setIsDeleting(true)
-    fetch(`http://localhost:8080/product/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/product/${id}`, {
       method: 'DELETE'
     }).then(() => {
       setIsDeleting(false)

@@ -65,7 +65,7 @@ export default function ModalProduct({ product, isOpen, mode, handleClose, updat
 
   function createNewProduct(formData:any) {
     
-    fetch('http://localhost:8080/product', {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/product`, {
       method: 'POST',
       body: formData
     }).then(() => {
@@ -77,7 +77,7 @@ export default function ModalProduct({ product, isOpen, mode, handleClose, updat
   }
 
   function editProduct(formData:any, id: string | undefined) {
-    fetch(`http://localhost:8080/product/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/product/${id}`, {
       method: 'PUT',
       body: formData
     }).then(() => {
@@ -100,8 +100,8 @@ export default function ModalProduct({ product, isOpen, mode, handleClose, updat
       editProduct(formData, product?.id)
     }
     
-    // resetInputs()
-    // handleClose()
+    resetInputs()
+    handleClose()
   }
 
   return(

@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
+import { useSession } from "next-auth/react"
 
 import Box from '@mui/material/Box'
 import Table from '@mui/material/Table'
@@ -26,6 +27,7 @@ export interface UserProps {
 }
 
 export default function Users() {
+  const { data: session, status } = useSession()
   const [users, setUsers] = useState<UserProps[] | null>(null)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -38,7 +40,7 @@ export default function Users() {
   }
 
   function updateUsersState() {
-    fetch('http://localhost:8080/user')
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user`)
     .then(response => {
       return response.json()
     })
@@ -58,6 +60,17 @@ export default function Users() {
   useEffect(() => {
     updateUsersState()
   }, [])
+
+  if (status === "unauthenticated") {
+    return (
+      <Box>
+        <Typography component={'h1'} variant={'h3'} mb={5}>Access Denied</Typography>
+        <Link href={'/sign-in'}>
+          <Button variant='outlined'>Click here to sign-in</Button>
+        </Link>
+      </Box>
+    )
+  }
 
   return (
     <Box pb={5} component='section'>
@@ -101,7 +114,7 @@ export default function Users() {
                         <TableRow key={user.id}>
                           <TableCell padding='none' sx={{":hover": {backgroundColor: 'lightgray'}}}>
                             <Link 
-                              href={`http://localhost:3000/users/${user.id}`} 
+                              href={`${process.env.NEXT_PUBLIC_APP_URL}/users/${user.id}`} 
                               style={{width: '100%', display: 'inline-block', height: '100%', padding: 12}}
                             >
                               {user.name}

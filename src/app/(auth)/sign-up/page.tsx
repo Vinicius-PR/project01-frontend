@@ -52,7 +52,7 @@ export default function SignUp() {
     }
     setErrorPassword(false)
 
-    const response = await fetch('http://localhost:3000/api/user', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/user`, {
       method: 'POST',
       body: JSON.stringify({
         userName: formData.get('userName'),

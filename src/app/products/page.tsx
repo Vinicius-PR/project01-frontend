@@ -35,7 +35,7 @@ export default function Products() {
   }
 
   function updateProductsState() {
-    fetch('http://localhost:8080/product')
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/product`)
     .then(response => {
       return response.json()
     })

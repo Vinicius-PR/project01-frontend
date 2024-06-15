@@ -9,7 +9,7 @@ export default function WelcomeUserEmailTemplate({name}: ResetPasswordEmailTempl
       <p>
         Enjoy the project 01. Your account is <b>activated</b> now. Have a good time o/
       </p>
-      <a href={`http://localhost:3000/sign-in`}>
+      <a href={`${process.env.NEXT_PUBLIC_APP_URL}/sign-in`}>
         Click here to log in
       </a>
     </div>

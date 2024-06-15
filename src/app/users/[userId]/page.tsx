@@ -38,7 +38,7 @@ export default function User({params} : {
   }
 
   function getUser() {
-    fetch(`http://localhost:8080/user/${params.userId}`)
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user/${params.userId}`)
     .then(response => {
       return response.json()
     })
@@ -55,7 +55,7 @@ export default function User({params} : {
 
   function deleteUser(id: string) {
     setIsDeleting(true)
-    fetch(`http://localhost:8080/user/${id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user/${id}`, {
       method: 'DELETE'
     }).then(() => {
       setIsDeleting(false)

@@ -10,7 +10,7 @@ export default function ResetPasswordEmailTemplate({email, resetPasswordToken}: 
       <p>
         To reset you passord, click on this link below. It will expire after 25 minutes.
       </p>
-      <a href={`http://localhost:3000/changePassWord?token=${resetPasswordToken}`}>
+      <a href={`${process.env.NEXT_PUBLIC_APP_URL}/changePassWord?token=${resetPasswordToken}`}>
         Click here to reset your password
       </a>
     </div>

@@ -32,7 +32,7 @@ export default function ProductItem({ product } : ProductItemComponentProps) {
         <CardContent>
           <Image width={800} height={800} priority={true} style={imageStyle} src={product.imageProductUrl} alt={`product Image ${product.name}`} />
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            <Link href={`http://localhost:3000/products/${product.id}`}>{product.name}</Link>       
+            <Link href={`${process.env.NEXT_PUBLIC_APP_URL}/products/${product.id}`}>{product.name}</Link>       
           </Typography>
 
           <Rating name="read-only" value={product.rating} readOnly precision={0.5} />
@@ -50,7 +50,7 @@ export default function ProductItem({ product } : ProductItemComponentProps) {
 
         </CardContent>
         <CardActions>
-          <Link href={`http://localhost:3000/products/${product.id}`}>
+          <Link href={`${process.env.NEXT_PUBLIC_APP_URL}/products/${product.id}`}>
             <Button size="small">See details</Button>
           </Link>
         </CardActions>
