@@ -1,0 +1,102 @@
+{
+  "users": [
+    {
+      "id": "2",
+      "name": "Rafael Santos",
+      "email": "rafasantos@hotmail.com",
+      "phone": "(32) 99999 1414",
+      "job": "Police Officer"
+    },
+    {
+      "id": "3",
+      "name": "Melisa Resende",
+      "email": "melresende@hotmail.com",
+      "phone": "(32) 98756 8956",
+      "job": "Gardener"
+    },
+    {
+      "id": "4",
+      "name": "Vinicius Paula Resende",
+      "email": "vinicius_auto@hotmail.com",
+      "phone": "(32) 99993 0257",
+      "job": "Programmer"
+    },
+    {
+      "name": "Maria do Carmo Resende",
+      "email": "mariartartesanato@gmail.com",
+      "phone": "(32) 98787-4555",
+      "job": "Merchant",
+      "id": "6"
+    },
+    {
+      "name": "Wesley Santos ferreira",
+      "email": "wesleysantos@hotmail.com",
+      "phone": "(21) 89568 2125",
+      "job": "Programmer",
+      "id": "62d8"
+    },
+    {
+      "id": "553c",
+      "name": "Donald Trump",
+      "emailFormated": "donaldtrump@gmail.com",
+      "phone": "(33) 33333-3333",
+      "job": "President"
+    }
+  ],
+  "products": [
+    {
+      "name": "Nintendo Switch 32GB Standard cor vermelho-néon, azul-néon e preto",
+      "category": "Gamer",
+      "status": "Novo",
+      "price": 6000,
+      "rating": 4.5,
+      "description": "Description about the product 1",
+      "id": "1"
+    },
+    {
+      "id": "3",
+      "name": "Console Xbox Series X, Microsoft, 1Tb, Controle Sem Fio - Preto",
+      "category": "Gamer",
+      "status": "Novo",
+      "price": 4299.99,
+      "rating": 2.5,
+      "description": "Description about the product 3"
+    },
+    {
+      "id": "4",
+      "name": "Mochila para Notebook Dell Pro EcoLoop, Até 17, Nylex, Preto - 460-BDLK",
+      "category": "Moda",
+      "status": "Novo",
+      "price": 205,
+      "rating": 5,
+      "description": "Description about the product 4"
+    },
+    {
+      "name": "Camiseta Esports Casual We Are Ninja GG - KB001PRGGd",
+      "category": "Moda",
+      "status": "Novo",
+      "price": 49.99,
+      "rating": 4.5,
+      "description": "Description about the product 5",
+      "id": "5"
+    },
+    {
+      "name": "Camiseta Uniforme KaBuM! Esports 2024 Orange Territory, M - Laranja",
+      "category": "Moda",
+      "status": "Novo",
+      "price": 16889.99,
+      "rating": 4,
+      "description": "Description about the product 6",
+      "id": "6"
+    },
+    {
+      "name": "Carteira Nova Feita para vc",
+      "category": "Moda",
+      "status": "Novo",
+      "price": 340,
+      "rating": 5,
+      "description": "Muito bom",
+      "id": "b518"
+    }
+  ]
+}
