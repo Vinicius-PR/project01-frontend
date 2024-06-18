@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from "next-auth/react"
 
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -26,12 +27,27 @@ import { UserProps } from '../page'
 export default function User({params} : {
   params: {userId: string}
 }) {
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [user, setUser] = useState<UserProps | null>(null)
   const [isOpen, setIsOpen] = useState(false);
+  const [file, setFile] = useState<File>()
+
+  // console.log('file is', file)
 
   // State to check if is deleting.
   const [isDeleting, setIsDeleting] = useState(false)
+
+  function handleEditUser() {
+    if (status === "unauthenticated") {
+      alert('Need to login to Delete/Edit User')
+      return
+    }
+    if(user) {
+      fetchUserImage(user.imageUserUrl, user.imageUserOriginalName)
+    }
+    setIsOpen(true)
+  }
 
   function handleClose() {
     setIsOpen(false)
@@ -53,7 +69,29 @@ export default function User({params} : {
     })
   }
 
+  async function fetchUserImage(imageUrl: string, imageName: string) {
+    await fetch(`${imageUrl}`, {
+      headers: {
+        'Access-Control-Allow-Origin': `${process.env.NEXT_PUBLIC_APP_URL}`
+      }
+    })
+      .then((response) => {
+        return response.blob()
+      }).then((blob) => {
+        const file = new File([blob], `${imageName}`, { type: blob.type })
+        setFile(file)
+      })
+      .catch((error) => {
+        console.error('Error getting image:', error)
+      })
+  }
+
   function deleteUser(id: string) {
+    if (status === "unauthenticated") {
+      alert('Need to login to Delete/Edit User')
+      return
+    }
+
     setIsDeleting(true)
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user/${id}`, {
       method: 'DELETE'
@@ -74,6 +112,7 @@ export default function User({params} : {
         mode='editUser'
         isOpen={isOpen}
         user={user}
+        file={file}
         handleClose={handleClose} 
         updateUsersState={getUser}
       />
@@ -93,9 +132,7 @@ export default function User({params} : {
 
                 <Tooltip title="Edit">
                   <IconButton
-                    onClick={() => {
-                      setIsOpen(true)
-                    }}
+                    onClick={handleEditUser}
                   >
                     <Edit
                       fontSize='large'

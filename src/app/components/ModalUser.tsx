@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -14,6 +14,7 @@ interface ModalUserProps {
   isOpen: boolean,
   mode: 'createNew' | 'editUser' | undefined,
   user: UserProps | null,
+  file?: File
   handleClose: () => void,
   updateUsersState: () => void
 }
@@ -34,17 +35,17 @@ const style = {
   py: 8,
 };
 
-export default function ModalUser({ isOpen, handleClose, updateUsersState, mode, user }: ModalUserProps) {
+export default function ModalUser({ isOpen, handleClose, updateUsersState, mode, user, file }: ModalUserProps) {
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [job, setJob] = useState('')
-  // const [file, setFile] = useState<any>(null)
-  
   const [errorEmail, setErrorEmail] = useState(false)
   const [errorPhone, setErrorPhone] = useState(false)
 
+  const imageUserInputRef = useRef<HTMLInputElement>(null)
+  
   useEffect(() => {
     if (mode === 'editUser' && user) {
       setName(user.name)
@@ -53,6 +54,15 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
       setJob(user.job)
     }
   }, [user])
+
+  useEffect(() => {
+    if (imageUserInputRef.current && file) {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      imageUserInputRef.current.files = dataTransfer.files;
+    }
+  }, [file])
+  
 
   function isPhoneNumberComplete(phone: string) {
     // Number formated should have 14 or 15 character as:
@@ -94,8 +104,6 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
   function createNewUser(formData:any) {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user`, {
       method: 'POST',
-      // I had to comment this cause was giving an erro about boundary
-      // headers: {"Content-Type": "multipart/form-data", "boundary": "xxx---"},
       body: formData
     }).then(() => {
       updateUsersState()
@@ -156,6 +164,7 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
             id='userImage'
             accept='image/*'
             type='file'
+            ref={imageUserInputRef}
           />
         </Box>
 

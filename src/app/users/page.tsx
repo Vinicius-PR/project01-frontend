@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useSession } from "next-auth/react"
+import Link from 'next/link'
 
 import Box from '@mui/material/Box'
 import Table from '@mui/material/Table'
@@ -13,8 +14,8 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+
 import ModalUser from '../components/ModalUser'
-import Link from 'next/link'
 
 export interface UserProps {
   id: string,
@@ -24,6 +25,7 @@ export interface UserProps {
   job: string,
   imageUserName: string,
   imageUserUrl: string
+  imageUserOriginalName: string
 }
 
 export default function Users() {
@@ -32,6 +34,11 @@ export default function Users() {
   const [isOpen, setIsOpen] = useState(false)
 
   function handleOpen() {
+    if (status === "unauthenticated") {
+      alert('Need to login in to add an User')
+      return
+    }
+
     setIsOpen(true);
   }
 
@@ -60,17 +67,6 @@ export default function Users() {
   useEffect(() => {
     updateUsersState()
   }, [])
-
-  if (status === "unauthenticated") {
-    return (
-      <Box>
-        <Typography component={'h1'} variant={'h3'} mb={5}>Access Denied</Typography>
-        <Link href={'/sign-in'}>
-          <Button variant='outlined'>Click here to sign-in</Button>
-        </Link>
-      </Box>
-    )
-  }
 
   return (
     <Box pb={5} component='section'>

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useSession } from "next-auth/react"
 
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -15,19 +16,45 @@ import ModalProduct from '@/app/components/ModalProduct'
 export default function Product({params} : {
   params: {productId: string}
 }) {
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [product, setProduct] = useState<ProductProps | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [file, setFile] = useState<File>()
 
   // State to check if is deleting.
   const [isDeleting, setIsDeleting] = useState(false)
 
-  function handleOpen() {
+  function handleEditProduct() {
+    if (status === "unauthenticated") {
+      alert('Need to login to Delete/Edit Product')
+      return
+    }
+    if (product) {
+      fetchProductImage(product.imageProductUrl, product.imageProductOriginalName)
+    }
     setIsOpen(true);
   }
 
   function handleClose() {
     setIsOpen(false)
+  }
+
+  async function fetchProductImage(imageUrl: string, imageName: string) {
+    await fetch(`${imageUrl}`, {
+      headers: {
+        'Access-Control-Allow-Origin': `${process.env.NEXT_PUBLIC_APP_URL}`
+      }
+    })
+      .then((response) => {
+        return response.blob()
+      }).then((blob) => {
+        const file = new File([blob], `${imageName}`, { type: blob.type })
+        setFile(file)
+      })
+      .catch((error) => {
+        console.error('Error getting image:', error)
+      })
   }
 
   function getProduct() {
@@ -47,6 +74,10 @@ export default function Product({params} : {
   }
 
   function deleteProduct(id: string | undefined) {
+    if (status === "unauthenticated") {
+      alert('Need to login to Delete/Edit Product')
+      return
+    }
     setIsDeleting(true)
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/product/${id}`, {
       method: 'DELETE'
@@ -62,7 +93,14 @@ export default function Product({params} : {
 
   return (
     <Box py={10} component='section'>
-      <ModalProduct mode='editProduct' isOpen={isOpen} handleClose={handleClose} getProduct={getProduct} product={product}/>
+      <ModalProduct 
+        mode='editProduct' 
+        isOpen={isOpen} 
+        handleClose={handleClose} 
+        getProduct={getProduct} 
+        product={product}
+        file={file}
+      />
       {
         product === null ? (
           <h1>Loading...</h1>
@@ -97,7 +135,7 @@ export default function Product({params} : {
             </Button>
 
             <Box mt={5} display='flex' justifyContent='space-evenly'>
-              <Button size='large' variant='contained' color='secondary' onClick={handleOpen}>Edit</Button>
+              <Button size='large' variant='contained' color='secondary' onClick={handleEditProduct}>Edit</Button>
               <Button disabled={isDeleting} size='large' variant='contained' color='error' onClick={() => deleteProduct(product.id)}>Delete</Button>
             </Box>
           </>

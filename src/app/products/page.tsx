@@ -1,12 +1,14 @@
 'use client'
 
+import { useSession } from "next-auth/react"
+import { useEffect, useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button'
 
 import ProductItem from '../components/ProductItem';
-import { useEffect, useState } from 'react';
 import ModalProduct from '../components/ModalProduct';
 
 export interface ProductProps {
@@ -19,14 +21,20 @@ export interface ProductProps {
   description: string,
   imageProductName: string,
   imageProductUrl: string
+  imageProductOriginalName: string
 }
 
 export default function Products() {
 
+  const { data: session, status } = useSession()
   const [products, setProducts] = useState<ProductProps[] | null>(null)
   const [isOpen, setIsOpen] = useState(false)
 
   function handleOpen() {
+    if (status === "unauthenticated") {
+      alert('Need to login in to add a Product')
+      return
+    }
     setIsOpen(true);
   }
 
@@ -40,7 +48,7 @@ export default function Products() {
       return response.json()
     })
     .then(data => {
-      // Added timestamp to the image url so i can change when change the image. By creating a new url.
+      // Added timestamp to the image url to create a new url. With this, the image will update.
       const timestamp = new Date().getTime(); 
       const products:ProductProps[] = data.data.map((product: ProductProps) => {
         return {

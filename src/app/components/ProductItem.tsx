@@ -30,7 +30,10 @@ export default function ProductItem({ product } : ProductItemComponentProps) {
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <Card>
         <CardContent>
-          <Image width={800} height={800} priority={true} style={imageStyle} src={product.imageProductUrl} alt={`product Image ${product.name}`} />
+          
+          <Link href={`${process.env.NEXT_PUBLIC_APP_URL}/products/${product.id}`}>
+            <Image width={800} height={800} priority={true} style={imageStyle} src={product.imageProductUrl} alt={`product Image ${product.name}`} />
+          </Link>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             <Link href={`${process.env.NEXT_PUBLIC_APP_URL}/products/${product.id}`}>{product.name}</Link>       
           </Typography>

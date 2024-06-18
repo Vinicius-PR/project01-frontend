@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
@@ -14,6 +14,7 @@ interface ModalProductProps {
   product: ProductProps | null
   isOpen: boolean
   mode: 'createNew' | 'editProduct' | undefined,
+  file?: File
   handleClose: () => void,
   updateProductsState?: () => void,
   getProduct?: () => void
@@ -35,13 +36,16 @@ const style = {
   py: 8,
 };
 
-export default function ModalProduct({ product, isOpen, mode, handleClose, updateProductsState, getProduct }:ModalProductProps) {
-  const [name, setName] = useState<string>('')
-  const [category, setCategory] = useState<string>('')
-  const [status, setStatus] = useState<string>('')
+export default function ModalProduct({ product, isOpen, mode, handleClose, updateProductsState, getProduct,file }:ModalProductProps) {
+  const [name, setName] = useState('')
+  const [category, setCategory] = useState('')
+  const [status, setStatus] = useState('')
   const [price, setPrice] = useState<number | null>(null)
   const [rating, setRating] = useState<number | null>(0)
-  const [description, setDescription] = useState<string>('')
+  const [description, setDescription] = useState('')
+  const [errorRating, setErrorRating] = useState(false)
+
+  const imageProductInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (mode === 'editProduct' && product) {
@@ -53,6 +57,14 @@ export default function ModalProduct({ product, isOpen, mode, handleClose, updat
       setDescription(product.description)
     }
   }, [product])
+
+  useEffect(() => {
+    if (imageProductInputRef.current && file) {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      imageProductInputRef.current.files = dataTransfer.files;
+    }
+  }, [file])
 
   function resetInputs() {
     setName('')
@@ -90,7 +102,10 @@ export default function ModalProduct({ product, isOpen, mode, handleClose, updat
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-
+    if (rating === 0) {
+      setErrorRating(true)
+      return
+    }
     const formData = new FormData(event.currentTarget)
 
     if (mode === 'createNew') {
@@ -126,6 +141,7 @@ export default function ModalProduct({ product, isOpen, mode, handleClose, updat
             id='productImage'
             accept='image/*'
             type='file'
+            ref={imageProductInputRef}
           />
         </Box>
 
@@ -181,15 +197,19 @@ export default function ModalProduct({ product, isOpen, mode, handleClose, updat
           onChange={(e) => setPrice(Number(e.target.value))}
         />
 
-        <Rating
-          aria-required='true'
-          precision={0.5}
-          name="rating"
-          value={rating}
-          onChange={(event, newValue) => {
-            setRating(newValue);
-          }}
-        />
+        <Box display={'flex'} gap={2}>
+          <Rating
+            aria-required='true'
+            precision={0.5}
+            name="rating"
+            value={rating}
+            onChange={(event, newValue) => {
+              setRating(newValue);
+              setErrorRating(false)
+            }}
+          />
+          {errorRating && <Typography component={'span'} color={'red'}>Rating is required</Typography>}
+        </Box>
 
         <TextareaAutosize
           required
