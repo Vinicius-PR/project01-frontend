@@ -103,7 +103,7 @@ export default function User({params} : {
 
   useEffect(() => {
     getUser()
-  }, [])
+  }, [getUser])
 
   return (
     <Box component='section'>

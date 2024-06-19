@@ -53,7 +53,7 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
       setPhone(user.phone)
       setJob(user.job)
     }
-  }, [user])
+  }, [mode, user])
 
   useEffect(() => {
     if (imageUserInputRef.current && file) {

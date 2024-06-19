@@ -89,7 +89,7 @@ export default function Product({params} : {
 
   useEffect(() => {
     getProduct()
-  }, [])
+  }, [getProduct])
 
   return (
     <Box py={10} component='section'>

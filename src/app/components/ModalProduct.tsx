@@ -56,7 +56,7 @@ export default function ModalProduct({ product, isOpen, mode, handleClose, updat
       setRating(product.rating)
       setDescription(product.description)
     }
-  }, [product])
+  }, [mode, product])
 
   useEffect(() => {
     if (imageProductInputRef.current && file) {
