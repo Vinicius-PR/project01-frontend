@@ -1,27 +1,19 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from "next-auth/react"
+import {Box, Typography, Divider, List, ListItem, ListItemText, ListItemAvatar, Avatar, Button, IconButton, Tooltip, FormLabel, Input} from '@mui/material'
 
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import WorkIcon from '@mui/icons-material/Work';
 import Edit from '@mui/icons-material/Edit';
-import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
-import Tooltip from '@mui/material/Tooltip'
 
 import avatarImgPlaceholder from '../../assets/user.png'
+
 import Image from 'next/image'
 import ModalUser from '@/app/components/ModalUser';
+import ImageCropper from '@/app/components/ImageCropper'
 import { UserProps } from '../page'
 
 export default function User({params} : {
@@ -30,10 +22,9 @@ export default function User({params} : {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [user, setUser] = useState<UserProps | null>(null)
-  const [isOpen, setIsOpen] = useState(false);
-  const [file, setFile] = useState<File>()
-
-  // console.log('file is', file)
+  const [isOpenModalUser, setIsOpenModalUser] = useState(false);
+  const [imgSrc, setImgSrc] = useState('')
+  const [isSelectingImg, setIsSelectingImg] = useState(false)
 
   // State to check if is deleting.
   const [isDeleting, setIsDeleting] = useState(false)
@@ -43,47 +34,48 @@ export default function User({params} : {
       alert('Need to login to Delete/Edit User')
       return
     }
-    if(user) {
-      fetchUserImage(user.imageUserUrl, user.imageUserOriginalName)
-    }
-    setIsOpen(true)
+    setIsOpenModalUser(true)
   }
 
-  function handleClose() {
-    setIsOpen(false)
+  function handleCloseModalUser() {
+    setIsOpenModalUser(false)
   }
 
-  function getUser() {
+  function handleCloseImageCropper() {
+    setIsSelectingImg(false)
+  }
+
+  function handleClearImgSrcState() {
+    setImgSrc('')
+  }
+
+  const getUser = useCallback(() => {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user/${params.userId}`)
     .then(response => {
       return response.json()
     })
     .then(data => {
-      // Added timestamp to the image url so i can change when change the image. By creating a new url.
-      const timestamp = new Date().getTime(); 
       const user:UserProps = {
-        ...data.data,
-        imageUserUrl: `${data.data.imageUserUrl}?t=${timestamp}`
+        ...data.data
       }
       setUser(user)
     })
-  }
+  }, [params.userId])
 
-  async function fetchUserImage(imageUrl: string, imageName: string) {
-    await fetch(`${imageUrl}`, {
-      headers: {
-        'Access-Control-Allow-Origin': `${process.env.NEXT_PUBLIC_APP_URL}`
-      }
+  function createNewImageUrl() {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user/${params.userId}`)
+    .then(response => {
+      return response.json()
     })
-      .then((response) => {
-        return response.blob()
-      }).then((blob) => {
-        const file = new File([blob], `${imageName}`, { type: blob.type })
-        setFile(file)
-      })
-      .catch((error) => {
-        console.error('Error getting image:', error)
-      })
+    .then(data => {
+      // Added timestamp to the image url so it can change when change the image. By creating a new url.
+      const timestamp = new Date().getTime(); 
+      const newUser:UserProps = {
+        ...data.data,
+        imageUserUrl: `${data.data?.imageUserUrl}?t=${timestamp}`
+      }
+      setUser(newUser)
+    })
   }
 
   function deleteUser(id: string) {
@@ -101,20 +93,59 @@ export default function User({params} : {
     })
   }
 
+  function onSelectFile(e:ChangeEvent<HTMLInputElement>) {
+    const fileSelected = e.currentTarget.files?.[0]
+    if (!fileSelected)
+      return 
+
+    // Check if the file is an image
+    if (!fileSelected.type.startsWith('image/')) {
+      console.error('Selected file is not an image.')
+      alert('Selected file is not an image.')
+      return
+    }
+    
+    // Check if the file size exceeds 4MB
+    const maxSizeInBytes = 4 * 1024 * 1024; // 4MB in bytes
+    if (fileSelected.size > maxSizeInBytes) {
+      console.error('Selected file is larger than 4MB.')
+      alert('Selected file is larger than 4MB.')
+      return
+    }
+    
+    let reader = new FileReader();
+    reader.readAsDataURL(fileSelected)
+    reader.addEventListener('load', () => {
+      const imageUrl = reader.result?.toString() || ''
+      setImgSrc(imageUrl)
+      setIsSelectingImg(true)
+    })
+    // Must reset the target.value to make the onChange event run when selecting the same image.
+    e.target.value = ''
+  }
+
   useEffect(() => {
     getUser()
   }, [getUser])
 
   return (
     <Box component='section'>
-
       <ModalUser
         mode='editUser'
-        isOpen={isOpen}
+        isOpen={isOpenModalUser}
         user={user}
-        file={file}
-        handleClose={handleClose} 
+        handleCloseModal={handleCloseModalUser} 
         updateUsersState={getUser}
+      />
+
+      <ImageCropper
+        isSelectingImg={isSelectingImg}
+        imgSrc={imgSrc}
+        userId={user?.id}
+        userImageName={user?.imageUserName}
+        handleCloseModal={handleCloseImageCropper}
+        handleClearImgSrcState={handleClearImgSrcState}
+        updateUsersState={createNewImageUrl}
       />
 
       <Button variant='contained' sx={{my:3}} onClick={() => router.push('/users')}>Go back</Button>
@@ -124,9 +155,86 @@ export default function User({params} : {
           <h1>Loading...</h1>
         ) : (
           <>
-            <Box display={'flex'} alignItems={'center'}>
-              <Image style={{borderRadius: '50%'}} width={100} height={100} src={user.imageUserUrl} alt='avatar image' />
-              <Box marginLeft={3} display={'flex'} justifyContent={'space-between'} alignItems={'center'} width={'100%'}>
+            <Box 
+              display={'flex'} 
+              alignItems={'center'} 
+              padding={'10px'}
+              borderRadius={'20px'} 
+              sx={{backgroundColor: 'lightblue'}}
+            >
+              <Box 
+                position='relative'
+                overflow='hidden'
+                width='130px'
+                display='flex'
+                justifyContent='center'
+                alignItems='center'
+              >
+                {
+                  (user.imageUserUrl.startsWith('?t=') || user.imageUserUrl === '') ? (
+                    <Image 
+                      style={{borderRadius: '100%'}} width={100} height={100}
+                      src={avatarImgPlaceholder.src}
+                      alt='avatar image'
+                      priority
+                    />
+                  ) : (
+                    <Image 
+                      style={{borderRadius: '100%'}} width={100} height={100} 
+                      src={user.imageUserUrl} 
+                      alt='avatar image'
+                      priority
+                    />
+                  )
+                }
+                <input
+                  name='userImage'
+                  id='userImage'
+                  accept='image/*'
+                  type='file'
+                  onChange={onSelectFile}
+                  style={{
+                    display: 'none'
+                  }}
+                />
+                <FormLabel
+                  htmlFor='userImage'
+                  sx={{
+                    opacity: 0,
+                    position: 'absolute',
+                    width: '100px',
+                    height: '100px',
+                    borderRadius: '100%',
+                    margin: '0 auto',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    color: 'white',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '14px',
+                    padding: '0 10px',
+                    cursor: 'pointer',
+                    ":hover": {
+                      opacity: 1
+                    }
+                  }}
+                >
+                  Image must be less than 4MB
+                </FormLabel>
+
+              </Box>
+              <Box
+                marginLeft={3} 
+                display={'flex'} 
+                justifyContent={'space-between'} 
+                alignItems={'center'} 
+                width={'100%'}
+              >
 
                 <Typography fontSize={20} component={'p'}>{user.name}</Typography>
 
@@ -143,6 +251,8 @@ export default function User({params} : {
                 </Tooltip>
               </Box>
             </Box>
+
+
             <Divider sx={{my:3}} />
 
             <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>

@@ -18,14 +18,13 @@ import Button from '@mui/material/Button'
 import ModalUser from '../components/ModalUser'
 
 export interface UserProps {
-  id: string,
-  name: string,
-  email: string,
-  phone: string,
-  job: string,
-  imageUserName: string,
+  id: string
+  name: string
+  email: string
+  phone: string
+  job: string
+  imageUserName: string
   imageUserUrl: string
-  imageUserOriginalName: string
 }
 
 export default function Users() {
@@ -52,12 +51,9 @@ export default function Users() {
       return response.json()
     })
     .then(data => {
-      // Added timestamp to the image url so i can change when change the image. By creating a new url.
-      const timestamp = new Date().getTime(); 
       const users:UserProps[] = data.data.map((user: UserProps) => {
         return {
           ...user,
-          imageUserUrl: `${user.imageUserUrl}?t=${timestamp}`
         }
       })
       setUsers(users)
@@ -86,7 +82,7 @@ export default function Users() {
         mode='createNew' 
         isOpen={isOpen}
         user={null}
-        handleClose={handleClose} 
+        handleCloseModal={handleClose} 
         updateUsersState={updateUsersState}
       />
       {

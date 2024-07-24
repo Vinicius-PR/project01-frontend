@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import Input from '@mui/material/Input';
 import { UserProps } from '../users/page';
 import { isEmail } from '@/utils/utils';
 
@@ -14,9 +13,15 @@ interface ModalUserProps {
   isOpen: boolean,
   mode: 'createNew' | 'editUser' | undefined,
   user: UserProps | null,
-  file?: File
-  handleClose: () => void,
+  handleCloseModal: () => void,
   updateUsersState: () => void
+}
+
+interface dataFormType {
+  name: string,
+  email: string,
+  phone: string,
+  job: string
 }
 
 const style = {
@@ -35,16 +40,15 @@ const style = {
   py: 8,
 };
 
-export default function ModalUser({ isOpen, handleClose, updateUsersState, mode, user, file }: ModalUserProps) {
+export default function ModalUser({ isOpen, handleCloseModal: handleClose, updateUsersState, mode, user }: ModalUserProps) {
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [job, setJob] = useState('')
+
   const [errorEmail, setErrorEmail] = useState(false)
   const [errorPhone, setErrorPhone] = useState(false)
-
-  const imageUserInputRef = useRef<HTMLInputElement>(null)
   
   useEffect(() => {
     if (mode === 'editUser' && user) {
@@ -53,16 +57,7 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
       setPhone(user.phone)
       setJob(user.job)
     }
-  }, [mode, user])
-
-  useEffect(() => {
-    if (imageUserInputRef.current && file) {
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-      imageUserInputRef.current.files = dataTransfer.files;
-    }
-  }, [file])
-  
+  }, [mode, user])  
 
   function isPhoneNumberComplete(phone: string) {
     // Number formated should have 14 or 15 character as:
@@ -101,10 +96,13 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
     setJob('')
   }
 
-  function createNewUser(formData:any) {
+  function createNewUser(dataForm:dataFormType) {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user`, {
       method: 'POST',
-      body: formData
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataForm)
     }).then(() => {
       updateUsersState()
     }).catch((error) => {
@@ -112,10 +110,13 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
     })
   }
 
-  function editUser(formData:any, id: string) {
+  function editUser(dataForm:dataFormType, id: string) {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/user/${id}`, {
       method: 'PUT',
-      body: formData
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataForm)
     }).then(() => {
       updateUsersState()
     }).catch((error) => {
@@ -130,15 +131,15 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
       return
     }
     const formData = new FormData(e.currentTarget)
+    const dataForm:any = Object.fromEntries(formData)    
 
     if (mode === 'createNew') {
-      createNewUser(formData)
+      createNewUser(dataForm)
     } else if (mode === 'editUser' && user) {
-      formData.append('imageUserName', user.imageUserName)
-      editUser(formData, user.id)
+      editUser(dataForm, user.id)
     }
 
-    resetInputs()
+    // resetInputs()
     handleClose()
   }
 
@@ -155,18 +156,6 @@ export default function ModalUser({ isOpen, handleClose, updateUsersState, mode,
             mode === 'createNew' ? 'Add a new user' : 'Edit user'
           }
         </Typography>
-
-        <Box>
-          <label htmlFor="userImage">Select your photo</label><br/>
-          <input
-            required
-            name='userImage'
-            id='userImage'
-            accept='image/*'
-            type='file'
-            ref={imageUserInputRef}
-          />
-        </Box>
 
         <TextField
           required 

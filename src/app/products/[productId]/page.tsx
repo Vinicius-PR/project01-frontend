@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useSession } from "next-auth/react"
@@ -57,7 +57,7 @@ export default function Product({params} : {
       })
   }
 
-  function getProduct() {
+  const getProduct = useCallback(() => {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_APP_URL}/product/${params.productId}`)
     .then(response => {
       return response.json()
@@ -71,7 +71,7 @@ export default function Product({params} : {
       }
       setProduct(product)
     })
-  }
+  }, [params.productId])
 
   function deleteProduct(id: string | undefined) {
     if (status === "unauthenticated") {
