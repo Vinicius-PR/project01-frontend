@@ -33,6 +33,7 @@ export const authOptions: NextAuthOptions = {
             async authorize(credentials, req) {
                 // Add logic here to look up the user from the credentials supplied
                 if (!credentials?.email || !credentials.password) {
+                    console.error("There is no email or password provied")
                     return null
                 }
 
@@ -43,16 +44,19 @@ export const authOptions: NextAuthOptions = {
                 })
 
                 if (!existingUser) {
+                    console.error("User not found in the Database")
                     return null
                 }
 
                 const passwordMath = await compare(credentials.password, existingUser.password)
 
                 if (!passwordMath) {
+                    console.error("Password not match")
                     return null
                 }
 
                 if (!existingUser.active) {
+                    console.error("User is not active")
                     throw new Error('User is not active')
                 }
 

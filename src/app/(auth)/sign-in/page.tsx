@@ -36,7 +36,6 @@ function Copyright(props: any) {
 
 export default function SignIn() {
   const { data: session, status} = useSession()
-  console.log(session)
   const router = useRouter()
   const [errorEmail, setErrorEmail] = useState(false)
   const [errorSingIn, setErrorSignIn] = useState({
