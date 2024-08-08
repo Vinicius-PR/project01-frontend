@@ -91,6 +91,8 @@ export default function SignIn() {
       password: formData.get('password'),
       redirect: false
     })
+
+    console.log('singInData is', singInData)
     
     if (singInData?.error === "CredentialsSignin") {
       setErrorSignIn({
